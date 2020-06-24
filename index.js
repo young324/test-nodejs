@@ -48,8 +48,31 @@ var Contact = mongoose.model('contact',contactSchema);
 //Home
 app.get('/',function(req,res){
   res.redirect('/contacts');
+})//'/'에 들어가면 /contacts경로로 redirect하는 코드
+
+// Contacts - Index
+//'/contacts'에 들어갈때,err가 있다면 json형태로 웹브라우저에 표시하고,
+//에러가 없다면 검색 결과를 받아 contacts/index.ejs를 render(동적 페이지)한다.
+app.get('/contacts', function(req,res){
+  Contact.find({},function(err,contacts){//Contact는 모델
+    //모델.find(검색조건, 콜백함수) > {}빈 오브젝트인 경우 검색조건이 없다는 뜻
+    if(err) return res.json(err);
+    res.render('contacts/index',{contacts:contacts});
+  });
+});
+
+app.get('/contacts/new',function(req,res){
+  res.render('contacts/new');
 })
 
+//'/contacts'에 post요청이 오는 경우
+app.post('/contacts',function(req,res){
+  Contact.create(req.body,function(err, contact){
+    //모델.create(생성할 data, 콜백함수) > 는 DB에 data를 생성하는 함수
+    if(err) return res.json(err);
+    res.redirect('/contacts');//에러없이 contact data가 생성되면 redirect
+  });
+});
 
 //port setting...
 var port = 3000; // 사용할 포트 번호를 port 변수에 넣습니다.
